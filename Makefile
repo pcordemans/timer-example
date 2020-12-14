@@ -39,7 +39,7 @@ VPATH = ..
 ###############################################################################
 # Project settings
 
-PROJECT := mbed_blinky
+PROJECT := tim7
 
 
 # Project settings

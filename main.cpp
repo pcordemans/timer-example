@@ -20,34 +20,49 @@ extern "C" {
     }
 }
 
-int main()
-{    
-    //Green led of the NUCLEO-L476RG is connected to PA5
+/**
+ * Initializes PA5 as a digital output
+ * */
+void led_init(){
     //Enable GPIOA peripheral in the AHB2ENR: set bit 0
     RCC->AHB2ENR |= 1;
 
+    // GPIOA_MODER set GP output mode: reset bit 11 & set bit 10
+    GPIOA->MODER &= ~(1 << 11);
+    GPIOA->MODER |= 1 << 10;
+}
+
+void tim7_init(){
     //Enable TIM7 in the APB1ENR1: set bit 5
     RCC->APB1ENR1 |= 1 << 5;
-    
-    // GPIOA_MODER set GP output mode: reset bit 11 & set bit 10
-    GPIOA->MODER &= ~(1<<11);
-    GPIOA->MODER |= 1 << 10;
-        
+
     // Enable the global interrupt for TIM7 in NVIC
     NVIC_EnableIRQ(TIM7_IRQn);
 
     // Given a clock of 48MHz, set prescaler and count register for a period of 1s
     TIM7->PSC = 1999;
     TIM7->ARR = 23999;
-    
+
     // Set event generation, re-initializes timer counter and generates an update of the registers
     TIM7->EGR |= 1;
-    
+
     // Enable interrupt in TIM7
     TIM7->DIER |= 1;
-    
+}
+
+void tim7_start(){
     // Start TIM7
     TIM7->CR1 |= 1;
+}    
+
+int main()
+{    
+    
+    led_init();
+
+    tim7_init();    
+    
+    tim7_start();
 
     while (true)
     {
